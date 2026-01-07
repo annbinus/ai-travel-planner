@@ -1,31 +1,27 @@
 import Navbar from "./Navbar";
 import RecentItineraries from "./RecentItineraries";
 import FeatureCarousel from "./FeatureCarousel";
+import "../../styles/themes.css";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#f7f1e6]">
+    <>
+      {/* Navbar outside the page container */}
       <Navbar />
 
-      <div className="px-10 py-8">
+      {/* Main page content */}
+      <div className="page">
         {/* Greeting + Search */}
-        <div className="flex justify-between items-center mb-10">
-          <h1 className="text-4xl font-semibold">
-            Hello Ann!
-          </h1>
-
-          <input
-            placeholder="Ask AI to create itinerary"
-            className="w-96 px-6 py-3 rounded-full border shadow-sm"
-          />
+        <div className="flex-between mb-10">
+          <h1 className="text-4xl font-semibold">Hello Ann!</h1>
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-3 gap-10">
+        <div className="grid-3">
           <RecentItineraries />
           <FeatureCarousel />
         </div>
       </div>
-    </div>
+    </>
   );
 }

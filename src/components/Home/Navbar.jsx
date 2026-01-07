@@ -1,25 +1,45 @@
-const trips = ["India", "Japan", "Brazil"];
+import { useNavigate } from "react-router-dom";
+import "../../styles/themes.css";
 
-export default function RecentItineraries() {
+export default function Navbar() {
+  const navigate = useNavigate();
+
   return (
-    <div className="col-span-1 bg-white rounded-2xl p-6 shadow">
-      <h2 className="text-lg mb-4">Recent Itineraries</h2>
-
-      <div className="space-y-3">
-        {trips.map((trip) => (
-          <div
-            key={trip}
-            className="flex justify-between items-center bg-[#efe7dc] px-4 py-3 rounded-lg cursor-pointer"
-          >
-            <span>{trip}</span>
-            <span>→</span>
-          </div>
-        ))}
+    <nav className="navbar">
+      {/* Logo */}
+      <div className="logo" onClick={() => navigate("/home")}>
+        TravelAI
       </div>
 
-      <button className="w-full mt-6 bg-[#4b4036] text-white py-3 rounded-xl">
-        + Add a trip
-      </button>
-    </div>
+      {/* AI Search */}
+      <input placeholder="Ask AI to plan your trip..." />
+
+      {/* Right Section */}
+      <div className="icons flex items-center gap-4">
+        <button>📍</button>
+        <button>🔔</button>
+
+        {/* Profile */}
+        <div className="profile">
+          <img
+            src="https://i.pravatar.cc/40"
+            alt="profile"
+            className="w-10 h-10 rounded-full cursor-pointer border border-var(--beige)"
+          />
+
+          {/* Dropdown */}
+          <div className="dropdown">
+            <button>Profile</button>
+            <button>Settings</button>
+            <button
+              className="logout"
+              onClick={() => navigate("/login")}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 }
