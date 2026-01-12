@@ -163,7 +163,6 @@ h1, h2, h3 {
   color: var(--beige);
 }
 
-
 /* =============================
    BUTTONS
 ============================= */
@@ -231,7 +230,7 @@ h1, h2, h3 {
 }
 
 .card-carousel {
-  min-height: 580px; /* good square map space */
+  min-height: 540px; /* good square map space */
 }
 
 .carousel-container {

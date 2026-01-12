@@ -1,17 +1,18 @@
 import Navbar from "./Navbar";
 import RecentItineraries from "./RecentItineraries";
-import FeatureCarousel from "./FeatureCarousel";
+import SavedDestinations from "./SavedDestinations";
+import MapActions from "./MapActions";
 import "../../styles/themes.css";
 
 export default function Home() {
   return (
     <>
-      {/* Navbar outside the page container */}
+      {/* Navbar */}
       <Navbar />
 
       {/* Main page content */}
-      <div className="page">
-        {/* Greeting + Search */}
+      <div className="page p-6">
+        {/* Greeting */}
         <div className="flex-between mb-10">
           <h1 className="text-4xl font-semibold">Hello Ann!</h1>
         </div>
@@ -19,7 +20,9 @@ export default function Home() {
         {/* Main Content */}
         <div className="grid-3">
           <RecentItineraries />
-          <FeatureCarousel />
+
+          <SavedDestinations />
+            <MapActions />
         </div>
       </div>
     </>
