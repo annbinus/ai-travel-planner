@@ -45,16 +45,12 @@ export default function LoginForm() {
 
         <button className="form-button">SIGN IN</button>
 
-        {/* Register link */}
-       <p>
-        Don’t have an account?{" "}
-        <span
-          onClick={() => navigate("/register")} // ✅ navigate on click
-          className="cursor-pointer underline"
-        >
-          Register
-        </span>
-      </p>
+        <p>
+          Don’t have an account?{' '}
+          <span onClick={() => navigate('/register')} className="underline-link">
+            Register
+          </span>
+        </p>
       </form>
     </div>
   );

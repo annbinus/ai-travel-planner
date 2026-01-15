@@ -32,22 +32,25 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="h-screen w-full bg-[#f5f1eb] flex flex-col">
+    <div className="home-layout">
       {/* Navbar */}
       <Navbar onAdd={() => setShowModal(true)} />
-        <AdventureBar onAdd={() => setShowModal(true)} />
+      <AdventureBar onAdd={() => setShowModal(true)} />
 
 
       {/* Main content */}
-      <main className="flex-1 flex gap-6 p-6">
+  <main className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 pad-inner pad-vertical-md main-fixed">
         {/* Left: Map */}
-        <div className="flex-1 rounded-3xl overflow-hidden shadow-lg">
+        <div className="map-fixed">
           <MapSection destinations={destinations} onSelect={setSelected} />
         </div>
 
         {/* Right: Panels */}
-        <div className="flex flex-col gap-6 w-1/2">
-          <DestinationsPanel destinations={destinations} onSelect={setSelected} />
+        <div className="fill-scroll" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingRight: '1rem', overflow: 'hidden' }}>
+          <DestinationsPanel
+            destinations={destinations}
+            onSelect={setSelected}
+          />
           <DestinationDetails destination={selected} />
         </div>
       </main>

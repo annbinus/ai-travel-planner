@@ -1,19 +1,477 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-
+/* =============================
+   COLOR VARIABLES
+============================= */
 :root {
-  --bg: #F4EEE2;
-  --surface: #E6DDCF;
-  --text: #1C1C1C;
-  --primary: #4A3F3A;
-  --secondary: #3E342F;
+  --brown-primary: #4A3F3A;
+  --brown-dark: #3E342F;
+  --beige: #F4EEE2;
+  --beige-muted: #E6DDCF;
+  --text-dark: #1C1C1C;
+  --error-color: #8B5E3C;
+
+  /* trip box vars removed (unused) */
+  --page-side-padding: 1in; /* default horizontal page padding */
 }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg);
-  color: var(--text);
+
+/* =============================
+   GENERAL PAGE STYLES
+============================= */
+.page {
+  min-height: 100vh;
+  background-color: #f7f1e6;
+  padding-inline: var(--page-side-padding);
+  padding-block: 2rem; /* vertical padding remains */
+  font-family: sans-serif;
+  color: var(--text-dark);
 }
 
-.heading {
-  font-family: 'Playfair Display', serif;
+/* =============================
+   INNER-EDGE PADDING UTILITIES
+   Use these to add consistent padding on the inner edge of containers
+   Examples:
+     <div class="pad-inner">...</div>
+     <div class="pad-inner-sm">...</div>
+     <div class="pad-inner-md">...</div>
+     <div class="pad-inner-lg">...</div>
+   These are responsive-friendly and use a CSS variable for easy overrides.
+============================= */
+:root {
+  --pad-inner-sm: 0.5rem;   /* 8px */
+  --pad-inner-md: 1rem;     /* 16px */
+  --pad-inner-lg: 1.5rem;   /* 24px */
 }
+
+.pad-inner { padding-left: var(--pad-inner-md); padding-right: var(--pad-inner-md); }
+.pad-inner-sm { padding-left: var(--pad-inner-sm); padding-right: var(--pad-inner-sm); }
+.pad-inner-md { padding-left: var(--pad-inner-md); padding-right: var(--pad-inner-md); }
+.pad-inner-lg { padding-left: var(--pad-inner-lg); padding-right: var(--pad-inner-lg); }
+
+/* Vertical padding helpers for inner spacing and taller panels */
+:root {
+  --pad-vertical-sm: 0.5rem; /* 8px */
+  --pad-vertical-md: 1rem;   /* 16px */
+  --pad-vertical-lg: 1.5rem; /* 24px */
+}
+
+.pad-vertical-sm { padding-top: var(--pad-vertical-sm); padding-bottom: var(--pad-vertical-sm); }
+.pad-vertical-md { padding-top: var(--pad-vertical-md); padding-bottom: var(--pad-vertical-md); }
+.pad-vertical-lg { padding-top: var(--pad-vertical-lg); padding-bottom: var(--pad-vertical-lg); }
+
+/* Utility for panels that should expand and provide internal scrolling */
+.fill-scroll { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.fill-scroll .scroll-body { overflow-y: auto; flex: 1 1 auto; }
+
+/* Allow grid children to shrink and enable internal scrolling instead of expanding the grid
+   Fixes the behavior where adding items to the right column increases the whole row height */
+.home-layout > main, main {
+  min-height: 0;
+}
+
+/* Make direct children of the grid able to shrink (prevents the grid row from growing)
+   and ensure fill-scroll properly takes available space */
+main > * {
+  min-height: 0;
+}
+
+.fill-scroll {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.fill-scroll .scroll-body { overflow-y: auto; flex: 1 1 auto; }
+
+.panel { min-height: 0; }
+
+/* Small semantic utilities to replace common inline styles */
+.h2-md { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+.fw-semibold { font-weight: 600; }
+.muted { color: #4b5563; font-size: 0.875rem; }
+.card-item { margin-bottom: 0.75rem; cursor: pointer; border: 1px solid #e5e7eb; padding: 1rem; border-radius: 0.75rem; }
+.relative { position: relative; }
+.logout-btn { color: #F59E0B; background: transparent; border: none; cursor: pointer; }
+.btn-white { background: #fff; }
+.btn-dark-strong { background: #3b2f2f; color: #fff; }
+.auth-image { display: block; margin: 0 auto 1rem; width: 2rem; height: 2rem; }
+.auth-title-large { font-size: 2.25rem; }
+.main-fixed { height: calc(100vh - 4rem); }
+.panel-centered { display: flex; align-items: center; justify-content: center; color: #9ca3af; }
+.underline-link { text-decoration: underline; cursor: pointer; }
+
+
+h1, h2, h3 {
+  color: var(--text-dark);
+}
+
+/* =============================
+   FORM STYLES
+============================= */
+.form-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.7s;
+}
+
+.form-hidden {
+  transform: translate(-50%, 10px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.form-visible {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 18rem;
+  background-color: transparent; /* match page background */
+}
+
+.form input {
+  border: 1px solid var(--brown-dark);
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--text-dark);
+  outline: none;
+  border-radius: 0.25rem;
+}
+
+.form input::placeholder {
+  color: var(--brown-dark);
+}
+
+.form span {
+  font-size: 0.75rem;
+  color: var(--error-color);
+}
+
+.form button {
+  border: 1px solid var(--brown-dark);
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  color: var(--beige);
+  background-color: var(--brown-dark);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.form button:hover {
+  background-color: var(--brown-primary);
+}
+
+.form p {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+}
+
+.form p span {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* =============================
+   FORM BUTTON - used in auth forms
+============================= */
+.form-button {
+  border: 1px solid var(--brown-dark);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.form-button:hover {
+  background-color: var(--brown-dark);
+  color: var(--beige);
+}
+
+/* .btn-dark removed (unused) */
+
+/* =============================
+   CARDS / PANELS
+============================= */
+.card {
+  background-color: var(--beige); /* light background for cards */
+  padding: 1.5rem; /* consistent padding */
+  border-radius: 1rem; /* rounded corners */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  color: var(--text-dark);
+  position: relative;
+}
+
+/* List items inside cards */
+.card-wide {
+  grid-column: span 2;
+}
+
+/* =============================
+   CAROUSELS, MAP HELPERS and NAVBAR were removed because they are not referenced
+   directly by the project's JSX files. Keep the file small — re-add as needed.
+============================= */
+
+/* ========== New semantic helper classes ========== */
+
+/* Navbar (semantic wrapper to replace inline utility classes) */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  height: 4rem; /* 16 */
+  background-color: var(--brown-primary);
+  color: var(--beige);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem; /* px-8 */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* Full-bleed helper: let elements escape page-side padding and stretch edge-to-edge */
+.full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+/* Make navbar and adventure bar full-bleed so they span the viewport */
+/* Use the generic .full-bleed behavior above for edge-to-edge layout */
+
+.navbar-logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.navbar-right {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.navbar-icon-button {
+  font-size: 1.125rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.profile-img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  border: 1px solid #d6bfa7;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 10rem;
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-dropdown button {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Hero section */
+.hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 56rem; /* ~max-w-3xl */
+  color: #fff;
+}
+
+.hero-title {
+  margin-bottom: 1rem;
+  font-size: 2.25rem;
+  line-height: 1.05;
+}
+
+@media (min-width: 768px) {
+  .hero-title { font-size: 3.75rem; }
+}
+
+.cta-btn {
+  border-radius: 9999px;
+  background: #fb923c; /* orange-500 */
+  color: #fff;
+  padding: 1rem 2.5rem;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.cta-btn:hover { background: #f97316; }
+
+/* Home layout wrapper */
+.home-layout { background: #f5f1eb; min-height: 100vh; display: flex; flex-direction: column; padding-inline: var(--page-side-padding); }
+
+/* Ensure main content respects page-side padding as well */
+.main-content, main {
+  padding-inline: var(--page-side-padding);
+}
+
+/* Responsive: smaller side padding on narrow screens */
+@media (max-width: 640px) {
+  :root { --page-side-padding: 1rem; }
+}
+
+/* Map section */
+.map-section { padding-left: 1rem; height: 100%; }
+.map-marker { width: 0.75rem; height: 0.75rem; background: #fb923c; border-radius: 9999px; cursor: pointer; transition: transform 0.12s; }
+.map-marker:hover { transform: scale(1.25); }
+
+/* Ensure map column and its panels stretch to fill the main area */
+.map-section, .map-section .panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fixed map column: static height equal to viewport minus navbar height */
+.map-fixed {
+  --map-fixed-height: 70vh; /* match destination panel */
+  height: var(--map-fixed-height);
+  max-height: var(--map-fixed-height);
+  overflow: hidden;
+  flex: 0 0 var(--map-fixed-height); /* prevent flex growth */
+}
+.map-fixed .panel { height: 100%; display: flex; flex-direction: column; }
+.map-fixed .panel > .mapboxgl-map, .map-fixed .panel > div > .mapboxgl-map { height: 100% !important; }
+
+/* Panels with .fill-scroll should provide an internal scrolling region */
+.panel.fill-scroll {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.panel.fill-scroll > .scroll-body {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+/* Destination panel specific fixed height and internal scroll */
+.dest-panel {
+  height: 70vh;
+  max-height: 70vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.dest-panel > .scroll-body {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+.panel.fill-scroll > .scroll-body { max-height: 100%; }
+
+/* Panels */
+.panel { background: #ffffff; border-radius: 1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.04); padding: 1.5rem; }
+
+/* Modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:50; }
+.modal { background: #fff; border-radius: 1rem; padding: 2rem; width: 100%; max-width: 28rem; }
+.modal-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; }
+.modal-input { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.375rem; }
+.modal-actions { display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem; }
+
+/* Adventure bar */
+.adventure-bar { background: #d6bfa7; color: #3b2f2f; padding: 1.5rem; display:flex; flex-direction:column; align-items:center; gap:0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.adventure-btn { padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; }
+
+/* Back button */
+.back-button { position: absolute; top: 2rem; left: 2rem; font-size: 0.875rem; text-decoration: underline; cursor: pointer; }
+
+/* Main content grid */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 0 1.5rem 1.5rem;
+}
+@media (min-width: 768px) {
+  .main-content { grid-template-columns: 1fr 1fr; }
+}
+
+/* Auth layout */
+.auth-layout { min-height: 100vh; background: #f6f1ea; position: relative; overflow: hidden; }
+.auth-landing-buttons { position: absolute; left: 50%; transform: translateX(-50%); top: 55%; display:flex; flex-direction:column; gap:1rem; width:16rem; }
+
+/* Buttons utility classes removed (unused). Use semantic helpers like .adventure-btn, .form-button */
+
+/* Suggestion list item */
+.suggestion-item { padding: 0.5rem; cursor: pointer; }
+.suggestion-item:hover { background: #f3f4f6; }
+
+/* Adventure bar headings */
+.adventure-title { font-size: 1.125rem; font-weight: 600; text-align: center; }
+.adventure-subtitle { font-size: 0.75rem; color: rgba(59,47,47,0.75); max-width: 28rem; text-align: center; }
+.adventure-btn.primary { background: #3b2f2f; color: #fff; }
+
+/* Auth title wrapper */
+.auth-title { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; transition: all .7s; }
+

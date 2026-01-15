@@ -45,15 +45,15 @@ export default function AddDestinationModal({ onClose, onAdd }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl p-8 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Add Destination</h2>
+    <div className="modal-backdrop">
+      <div className="modal">
+        <h2 className="modal-title">Add Destination</h2>
 
         {/* Name input with autocomplete */}
         <div className="relative mb-3">
           <input
             placeholder="Name"
-            className="w-full p-2 border rounded"
+            className="modal-input"
             value={form.name}
             onChange={handleNameChange}
           />
@@ -74,7 +74,8 @@ export default function AddDestinationModal({ onClose, onAdd }) {
 
         <textarea
           placeholder="Description"
-          className="w-full mb-3 p-2 border rounded h-24 resize-none"
+          className="modal-input"
+          style={{ height: '6rem', marginBottom: '0.75rem' }}
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
@@ -82,7 +83,7 @@ export default function AddDestinationModal({ onClose, onAdd }) {
         {/* TikTok URL */}
         <input
           placeholder="TikTok URL"
-          className="w-full mb-3 p-2 border rounded"
+          className="modal-input"
           value={form.tiktokUrl}
           onChange={(e) => setForm({ ...form, tiktokUrl: e.target.value })}
         />
@@ -91,14 +92,12 @@ export default function AddDestinationModal({ onClose, onAdd }) {
         <input
           type="file"
           accept="video/*"
-          className="w-full mb-4"
+          className="modal-input"
           onChange={handleFileChange}
         />
 
-        <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 border rounded">
-            Cancel
-          </button>
+        <div className="modal-actions">
+          <button onClick={onClose} className="px-4 py-2 border rounded">Cancel</button>
           <button
             onClick={() =>
               onAdd({

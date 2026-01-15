@@ -20,27 +20,19 @@ export default function Auth() {
   const isAuthView = view !== "landing";
 
   return (
-    <div className="min-h-screen bg-[#f6f1ea] relative overflow-hidden">
+    <div className="auth-layout">
       {isAuthView && <BackButton onClick={() => navigate("/auth")} />}
 
       {/* Title */}
-      <Title view={view} />
+      <div className="auth-title" style={{ top: isAuthView ? '4rem' : '7rem' }}>
+        <Title view={view} />
+      </div>
 
       {/* Landing buttons BELOW the title */}
       {view === "landing" && (
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-[55%] flex flex-col gap-4 w-64">
-          <button
-            onClick={() => navigate("/login")}
-            className="form-button"
-          >
-            LOGIN
-          </button>
-          <button
-            onClick={() => navigate("/register")}
-            className="form-button"
-          >
-            REGISTER
-          </button>
+        <div className="auth-landing-buttons">
+          <button onClick={() => navigate("/login")} className="form-button">LOGIN</button>
+          <button onClick={() => navigate("/register")} className="form-button">REGISTER</button>
         </div>
       )}
 
