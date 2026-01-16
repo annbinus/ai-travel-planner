@@ -24,8 +24,24 @@ export default function RegisterForm() {
     setErrors(err);
 
     if (Object.keys(err).length === 0) {
-      console.log("Register success", data);
-      navigate("/login"); // ✅ redirect after successful registration
+      // Call backend register
+      fetch("http://localhost:5001/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: data.name, email: data.email, password: data.password }),
+      })
+        .then((res) => {
+          if (!res.ok) return res.json().then((b) => Promise.reject(b));
+          return res.json();
+        })
+        .then((body) => {
+          console.log("Register success", body);
+          navigate("/login");
+        })
+        .catch((errResp) => {
+          console.error("Register failed:", errResp);
+          setErrors({ form: errResp.error || "Registration failed" });
+        });
     }
   };
 

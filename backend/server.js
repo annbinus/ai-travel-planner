@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import destinationsRouter from "./routes/destinations.js";
 import itineraryItemsRouter from "./routes/itineraryItems.js";
 import itinerariesRouter from "./routes/itineraries.js";
+import authRouter from "./routes/auth.js";
 
 // Load environment variables
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/destinations", destinationsRouter);
 app.use("/api/itinerary-items", itineraryItemsRouter);
 app.use("/api/itineraries", itinerariesRouter);
+app.use("/api/auth", authRouter);
 
 // Health check route
 app.get("/api/health", (req, res) => {

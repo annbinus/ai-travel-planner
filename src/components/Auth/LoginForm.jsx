@@ -19,8 +19,25 @@ export default function LoginForm() {
     setErrors(err);
 
     if (Object.keys(err).length === 0) {
-      console.log("Login success", data);
-      navigate("/home"); // go to home after login
+      // Call backend login
+      fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, password: data.password }),
+      })
+        .then((res) => {
+          if (!res.ok) return res.json().then((b) => Promise.reject(b));
+          return res.json();
+        })
+        .then((body) => {
+          console.log("Login success", body);
+          // TODO: persist auth token/session when implemented
+          navigate("/home"); // go to home after login
+        })
+        .catch((errResp) => {
+          console.error("Login failed:", errResp);
+          setErrors({ form: errResp.error || "Login failed" });
+        });
     }
   };
 
