@@ -1,38 +1,20 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function Navbar() {
-  const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
+export default function Navbar({ onAdd }) {
   return (
-  <nav className="navbar full-bleed">
-      {/* Logo */}
-      <div className="navbar-logo" onClick={() => navigate("/home")}>TravelAI</div>
+    <nav className="navbar full-bleed bg-white shadow-md p-4 flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <Link to="/" className="text-xl font-bold">AI Travel Planner</Link>
+      </div>
 
-      {/* Right Section */}
-      <div className="navbar-right">
-        <button className="navbar-icon-button">📍</button>
-        <button className="navbar-icon-button">🔔</button>
-
-        {/* Profile */}
-        <div className="relative">
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="profile"
-            className="profile-img"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          />
-
-          {/* Dropdown */}
-          {dropdownOpen && (
-            <div className="profile-dropdown">
-              <button>Profile</button>
-              <button>Settings</button>
-              <button onClick={() => navigate("/login")} className="logout-btn">Logout</button>
-            </div>
-          )}
-        </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onAdd}
+          className="btn btn-primary px-4 py-2 rounded"
+        >
+          Add Destination
+        </button>
+        <Link to="/generate" className="btn btn-secondary px-4 py-2 rounded">Generate</Link>
       </div>
     </nav>
   );

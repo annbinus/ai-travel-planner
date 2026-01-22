@@ -1,6 +1,21 @@
 import express from "express";
 import pool from "../db.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
+
+function signToken(user) {
+  return jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
+}
+
+function verifyToken(token) {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    return null;
+  }
+}
 
 const router = express.Router();
 
@@ -52,13 +67,34 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Return user without password
+    // Return user without password and set HttpOnly cookie
     const safeUser = { id: user.id, name: user.name, email: user.email };
+    const token = signToken(safeUser);
+    res.cookie("token", token, { httpOnly: true, sameSite: "lax" });
     res.json({ user: safeUser });
   } catch (err) {
     console.error("POST /api/login error:", err);
     res.status(500).json({ error: "Failed to login" });
   }
+});
+
+// GET /api/auth/me
+router.get("/me", async (req, res) => {
+  try {
+    const token = req.cookies?.token || req.headers.authorization?.replace(/^Bearer\s+/, "");
+    const payload = verifyToken(token);
+    if (!payload) return res.status(401).json({ error: "Not authenticated" });
+    res.json({ user: { id: payload.id, name: payload.name, email: payload.email } });
+  } catch (err) {
+    console.error("GET /api/auth/me error:", err);
+    res.status(500).json({ error: "Failed to verify" });
+  }
+});
+
+// POST /api/auth/logout
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ ok: true });
 });
 
 export default router;

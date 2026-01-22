@@ -55,4 +55,123 @@ router.get("/:itineraryId", async (req, res) => {
   }
 });
 
+// POST - Create a new itinerary with day items
+router.post("/", async (req, res) => {
+  const client = await pool.connect();
+  
+  try {
+    const { title, destinations, preferences, days, itinerary } = req.body;
+
+    if (!itinerary || !Array.isArray(itinerary) || itinerary.length === 0) {
+      return res.status(400).json({ error: "Itinerary items are required" });
+    }
+
+    await client.query('BEGIN');
+
+    // Create the itinerary (only using columns that exist)
+    const itineraryTitle = title || `Trip to ${destinations?.join(", ") || "Unknown"}`;
+    const { rows: [newItinerary] } = await client.query(
+      `INSERT INTO itineraries (title)
+       VALUES ($1)
+       RETURNING *`,
+      [itineraryTitle]
+    );
+
+    // Create itinerary items (one per day) using existing schema
+    // Store day title and content in notes field as JSON
+    const itemPromises = itinerary.map((day, index) =>
+      client.query(
+        `INSERT INTO itinerary_items (itinerary_id, day, position, notes)
+         VALUES ($1, $2, $3, $4)
+         RETURNING *`,
+        [
+          newItinerary.id,
+          index + 1,
+          index,
+          JSON.stringify({
+            title: day.title || `Day ${index + 1}`,
+            content: day.content || "",
+            destinations: destinations || [],
+            preferences: preferences || []
+          })
+        ]
+      )
+    );
+
+    const itemResults = await Promise.all(itemPromises);
+    const items = itemResults.map(r => r.rows[0]);
+
+    await client.query('COMMIT');
+
+    res.status(201).json({
+      success: true,
+      itinerary: newItinerary,
+      items: items
+    });
+
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error("POST /api/itineraries error:", err);
+    res.status(500).json({ error: "Failed to save itinerary" });
+  } finally {
+    client.release();
+  }
+});
+
+// GET all itineraries (for listing)
+router.get("/", async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM itineraries ORDER BY created_at DESC LIMIT 50`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("GET /api/itineraries error:", err);
+    res.status(500).json({ error: "Failed to fetch itineraries" });
+  }
+});
+
+// DELETE an itinerary and its items
+router.delete("/:itineraryId", async (req, res) => {
+  const client = await pool.connect();
+  
+  try {
+    const { itineraryId } = req.params;
+
+    await client.query('BEGIN');
+
+    // Delete itinerary items first (foreign key constraint)
+    await client.query(
+      'DELETE FROM itinerary_items WHERE itinerary_id = $1',
+      [itineraryId]
+    );
+
+    // Delete the itinerary
+    const { rows } = await client.query(
+      'DELETE FROM itineraries WHERE id = $1 RETURNING *',
+      [itineraryId]
+    );
+
+    if (rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: "Itinerary not found" });
+    }
+
+    await client.query('COMMIT');
+
+    res.json({ 
+      success: true, 
+      message: "Itinerary deleted successfully",
+      deleted: rows[0]
+    });
+
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error("DELETE /api/itineraries/:id error:", err);
+    res.status(500).json({ error: "Failed to delete itinerary" });
+  } finally {
+    client.release();
+  }
+});
+
 export default router;

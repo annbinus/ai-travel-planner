@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // ✅ import navigator
+import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/themes.css";
 
 export default function RegisterForm() {
   const navigate = useNavigate(); // ✅ initialize
   const [data, setData] = useState({ name: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const { register } = useAuth();
 
   const validateEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -24,24 +26,9 @@ export default function RegisterForm() {
     setErrors(err);
 
     if (Object.keys(err).length === 0) {
-      // Call backend register
-      fetch("http://localhost:5001/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: data.name, email: data.email, password: data.password }),
-      })
-        .then((res) => {
-          if (!res.ok) return res.json().then((b) => Promise.reject(b));
-          return res.json();
-        })
-        .then((body) => {
-          console.log("Register success", body);
-          navigate("/login");
-        })
-        .catch((errResp) => {
-          console.error("Register failed:", errResp);
-          setErrors({ form: errResp.error || "Registration failed" });
-        });
+      register(data.name, data.email, data.password)
+        .then(() => navigate('/login'))
+        .catch((errResp) => setErrors({ form: errResp.error || 'Registration failed' }));
     }
   };
 

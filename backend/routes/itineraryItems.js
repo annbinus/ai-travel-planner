@@ -3,19 +3,21 @@ import pool from "../db.js";
 
 const router = express.Router();
 
-// GET itinerary items by destination_id
+// GET itinerary items by destination_id or itinerary_id
 // Returns itinerary items with their itinerary details, organized by day
 router.get("/", async (req, res) => {
   try {
-    const { destination_id } = req.query;
+    const { destination_id, itinerary_id } = req.query;
 
-    if (!destination_id) {
-      return res.status(400).json({ error: "destination_id is required" });
+    if (!destination_id && !itinerary_id) {
+      return res.status(400).json({ error: "destination_id or itinerary_id is required" });
     }
 
-    // Get itinerary items with itinerary details
-    const { rows } = await pool.query(
-      `SELECT 
+    let query;
+    let params;
+
+    if (destination_id) {
+      query = `SELECT 
         ii.id,
         ii.itinerary_id,
         ii.destination_id,
@@ -28,9 +30,28 @@ router.get("/", async (req, res) => {
       FROM itinerary_items ii
       JOIN itineraries i ON ii.itinerary_id = i.id
       WHERE ii.destination_id = $1
-      ORDER BY ii.day ASC, ii.position ASC`,
-      [destination_id]
-    );
+      ORDER BY ii.day ASC, ii.position ASC`;
+      params = [destination_id];
+    } else {
+      query = `SELECT 
+        ii.id,
+        ii.itinerary_id,
+        ii.destination_id,
+        ii.day,
+        ii.position,
+        ii.notes,
+        i.title as itinerary_title,
+        i.user_id,
+        i.created_at as itinerary_created_at
+      FROM itinerary_items ii
+      JOIN itineraries i ON ii.itinerary_id = i.id
+      WHERE ii.itinerary_id = $1
+      ORDER BY ii.day ASC, ii.position ASC`;
+      params = [itinerary_id];
+    }
+
+    // Get itinerary items with itinerary details
+    const { rows } = await pool.query(query, params);
 
     res.json(rows);
   } catch (err) {

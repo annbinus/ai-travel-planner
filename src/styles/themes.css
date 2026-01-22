@@ -475,3 +475,74 @@ h1, h2, h3 {
 /* Auth title wrapper */
 .auth-title { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; transition: all .7s; }
 
+
+.generate-layout {
+  min-height: 100vh;
+  background: #f6f1ea;
+  padding: 2.5rem 1.5rem;
+}
+
+.generate-card {
+  max-width: 480px;
+  margin: auto;
+  background: #fffaf4;
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+.generate-title {
+  font-size: 1.7rem;
+  color: #3b2f2f;
+}
+
+.generate-subtitle {
+  color: #6b5b53;
+  margin-bottom: 1rem;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #d8cfc4;
+}
+
+.itinerary-section {
+  max-width: 640px;
+  margin: 3rem auto;
+}
+
+.itinerary-card {
+  background: #fffaf4;
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.editable-text {
+  width: 100%;
+  border: none;
+  resize: none;
+  background: transparent;
+  color: #6b5b53;
+}
+
+.skeleton-card {
+  height: 90px;
+  background: #eee;
+  border-radius: 14px;
+  margin: 1rem auto;
+  max-width: 640px;
+}
+
+.w-full {
+  width: 100%;
+}

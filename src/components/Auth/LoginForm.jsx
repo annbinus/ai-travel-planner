@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/themes.css";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [data, setData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const { login } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,25 +21,9 @@ export default function LoginForm() {
     setErrors(err);
 
     if (Object.keys(err).length === 0) {
-      // Call backend login
-      fetch("http://localhost:5001/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.email, password: data.password }),
-      })
-        .then((res) => {
-          if (!res.ok) return res.json().then((b) => Promise.reject(b));
-          return res.json();
-        })
-        .then((body) => {
-          console.log("Login success", body);
-          // TODO: persist auth token/session when implemented
-          navigate("/home"); // go to home after login
-        })
-        .catch((errResp) => {
-          console.error("Login failed:", errResp);
-          setErrors({ form: errResp.error || "Login failed" });
-        });
+      login(data.email, data.password)
+        .then(() => navigate('/home'))
+        .catch((errResp) => setErrors({ form: errResp.error || 'Login failed' }));
     }
   };
 

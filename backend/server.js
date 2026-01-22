@@ -1,21 +1,48 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cookieParser from "cookie-parser";
 import destinationsRouter from "./routes/destinations.js";
+import generateRouter from "./routes/generate.js";
+import extractTiktokRouter from "./routes/extract-tiktok.js";
 import itineraryItemsRouter from "./routes/itineraryItems.js";
 import itinerariesRouter from "./routes/itineraries.js";
 import authRouter from "./routes/auth.js";
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from the repo root
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "http://localhost:5173" }));
+// Dev-friendly CORS: allow specific localhost origins and enable credentials
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
 app.use(express.json());
+app.use(cookieParser());
 
 // Routes
+app.use("/api/generate", generateRouter);
+app.use("/api/extract-tiktok", extractTiktokRouter);
 app.use("/api/destinations", destinationsRouter);
 app.use("/api/itinerary-items", itineraryItemsRouter);
 app.use("/api/itineraries", itinerariesRouter);
