@@ -2,7 +2,7 @@
 
 An intelligent travel itinerary generator that uses AI to create personalized multi-day trips with draggable, editable activities.
 
-**[Live Demo](-)** 
+**[Live Demo](https://trippy-kappa.vercel.app)**
 
 ## Features
 
